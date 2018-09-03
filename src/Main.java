@@ -3,17 +3,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 ///Users/niyatishah01/Desktop/test.txt
 
 public class Main {
-	private static ArrayList<Integer> seats=new ArrayList<Integer>(); 
-	private static HashMap<Character, ArrayList<Integer>> theaterLayout = new HashMap<Character, ArrayList<Integer>>();
+
+	private static ConcurrentHashMap<Character, ArrayList<Integer>> theaterLayout = new ConcurrentHashMap<Character, ArrayList<Integer>>();
 	private static HashMap<String, Integer> reservationIdentifersList = new HashMap<String, Integer>(); 
-	private static AtomicInteger countAvailableSeats = new AtomicInteger(0);
+	private static HashMap<String, ArrayList<String>> reservationDetails= new HashMap<String, ArrayList<String>>();
 	private static int seatsPerRow=20;
 	private static int noOfRows=10;
-	
+	private static int countAvailableSeats=200;
 	public static void main(String[] args) throws IOException, CannotAllocateSeatException  {
 		
 		System.out.println("Enter input file path");
@@ -26,9 +26,9 @@ public class Main {
 	    {
 	    	splitLine(sc.nextLine());
 	    }
-	    userInput.close();
 	    sc.close();
-		
+	    userInput.close();
+	    System.out.println(reservationDetails);
 	}
 		private static void splitLine(String s) throws CannotAllocateSeatException {
 			String split[]=s.split(" ");
@@ -56,60 +56,66 @@ public class Main {
 			}
 					
 		}
-		private static String searchForBestSeats(int numSeats,String name){
+		private static void searchForBestSeats(int numSeats,String name){
 			String result="";
-			
-			/*if (numSeats > countAvailableSeats.get()) {
+			//create a new list for all these names
+			if (numSeats > countAvailableSeats) {
 				result += name + "Reservation cannot be made. %n";
-				return result;
 			}
-		*/
+		
 			if(numSeats > seatsPerRow) {
 				result += name + "think about this logic %n";
-				return result;
 			}
-			System.out.println("out here");
-			for (int i = 0; i < noOfRows; i++) {
-				System.out.println("in here");
-				ArrayList<Integer> availableSeats = theaterLayout.get('A');
-					int seatCnt = availableSeats.size();
-					if (seatCnt > 0 && seatCnt >= numSeats&&bestFit(seatCnt, numSeats)) {
-						
-						result+= name + printSeats(availableSeats, numSeats, i);
-
-					}
-				}
-			System.out.println(result);
-			return result;	
+			
+			    	Character row=closestFit(numSeats);
+			    	ArrayList<Integer> availableSeats=theaterLayout.get(row);
+					reservationDetails.put(name, printSeats(availableSeats, numSeats, row));
+					updateSeats(row,numSeats);
+					countAvailableSeats-=numSeats;
+					return;		
 		}
-
-		private static String printSeats(ArrayList<Integer> availableSeats, int numSeats, int rowId)
+		private static void updateSeats(Character row, int numSeats){
+			ArrayList<Integer> availableSeats=theaterLayout.get(row);
+				for(int i=0;i<numSeats;i++)
+					availableSeats.remove(0);
+		}
+		private static ArrayList<String> printSeats(ArrayList<Integer> availableSeats, int numSeats, Character rowId)
 		{
-			String result="";
+			ArrayList<String> result= new ArrayList<String>();
 			for(int i=0;i<numSeats;i++)
 			{
-				result+=Character.toString((char)(rowId+64))+availableSeats.get(i);
+				result.add(Character.toString(rowId)+availableSeats.get(i));
 			}
 			return result;
 		}
-		private static boolean bestFit(int seatCnt, int numSeats) {
-				return (seatCnt - numSeats == 0);
+		private static Character closestFit(int numSeats)
+		{
+			int minSize = Integer.MAX_VALUE;
+			Character row=Character.MIN_VALUE;
+			for (ConcurrentHashMap.Entry<Character, ArrayList<Integer>> entry : theaterLayout.entrySet())
+			{
+			    if ((entry.getValue().size()-numSeats)<minSize&&(entry.getValue().size()-numSeats)>=0)
+			    {
+			    	minSize = entry.getValue().size()-numSeats;
+			    	row=entry.getKey();
+			    }
+			}
+			return row;
 		}
-		private static void populateRows() {
+		private static ArrayList<Integer> populateRows() {
+			ArrayList<Integer> seats= new ArrayList<Integer>(); 
 			for(int i=0;i<seatsPerRow;i++)
 				seats.add(i+1);	
+			return seats;
 		}
 		
 		private static void populateTheaterMap()
 		{
-			populateRows();
 			char temp='A';
 			for(int i=0;i<noOfRows;i++)
 			{
-				theaterLayout.put(temp,seats);
+				theaterLayout.put(temp,populateRows());
 				temp++;
 			}
-			//System.out.println(theaterLayout);
 		}
-
 }
