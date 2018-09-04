@@ -23,11 +23,22 @@ Open your terminal window / command prompt.
 Go to the folder where the unzipped file is saved. 
 Navigate to the folder "src".
 Run the command:
+  ```
   javac Main.java
-
+   ```
+Or build a jar file using the command:
+  ```
+  jar cfve test.jar Main *.class
+   ```
 ### Steps to execute the program
 Run the following command to start the application
+  ```
   java Main
+  ```
+Or execute the jar file using the command:
+  ```
+  java -jar test.jar
+   ```
 It will ask you to enter a path to the input file. For example:
   ```
 Enter input file path
