@@ -5,13 +5,17 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 
 	private  ConcurrentHashMap<Character, ArrayList<Integer>> theaterLayout = new ConcurrentHashMap<Character, ArrayList<Integer>>();
 	private  HashMap<String, Integer> reservationIdentifersList = new HashMap<String, Integer>(); 
-	private  HashMap<String, ArrayList<String>> reservationDetails= new HashMap<String, ArrayList<String>>();
+	private  LinkedHashMap<String, ArrayList<String>> reservationDetails= new LinkedHashMap<String, ArrayList<String>>();
+	private  HashSet<String> noReservation= new HashSet<String>();
 	private  int seatsPerRow=20;
 	private  int noOfRows=10;
 	private  int countAvailableSeats=seatsPerRow*noOfRows;
@@ -50,15 +54,11 @@ public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 	}
 	private void searchForBestSeats(int numSeats,String name){
 		String result="";
-		//create a new list for all these names
-		if (numSeats > countAvailableSeats) {
+		if (numSeats > countAvailableSeats|| numSeats > seatsPerRow) {
 			result += name + "Reservation cannot be made. %n";
-		}
-	
-		if(numSeats > seatsPerRow) {
-			result += name + "think about this logic %n";
-		}
-		
+			noReservation.add(result);
+			return;
+		}	
 		    	Character row=closestFit(numSeats);
 		    	ArrayList<Integer> availableSeats=theaterLayout.get(row);
 				reservationDetails.put(name, printSeats(availableSeats, numSeats, row));
@@ -98,7 +98,7 @@ public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 	public String createFile() throws IOException {
 		String content="";
 		String newContent="";
-		for(HashMap.Entry<String, ArrayList<String>> entry : reservationDetails.entrySet())
+		for(Map.Entry<String, ArrayList<String>> entry : reservationDetails.entrySet())
 		{
 			 content+=entry.getKey()+" "+entry.getValue()+System.lineSeparator();
 			 newContent=content.replace("[", "").replace("]","");
