@@ -72,8 +72,8 @@ To execute test cases, run the command:
 A file with seat allocation data that is optimal for Theater utilization and customer satisfaction.
 
 ## Assumptions
-The solution is developed for one venue/theater screen for the above mentioned layout.
-It assumes that the seat rows are labeled in a fashion where, row A is farthest from the screen and J is the closest to the screen.
-It assumes the metric for customer satisfaction is obtaining seating as farther away from the screen and obtaining all requested seats consecutively.
-It assumes the metric for maximum theater utilization is having lesser "holes"/vacant seats sporadically and allocating as many seats as possible together.
-It assumes that the maximum seats a user can request to reserve cannot be greater than the total number of seats in the theater's row. (For this solution, user cannot request more than 20 seats).
+* The solution is developed for one venue/theater screen for the above mentioned layout.
+* It assumes that the seat rows are labeled in a fashion where, row A is farthest from the screen and J is the closest to the screen.
+* It assumes the metric for customer satisfaction is obtaining seating as farther away from the screen and obtaining all requested seats consecutively.
+* It assumes the metric for maximum theater utilization is having lesser "holes"/vacant seats sporadically and allocating as many seats as possible together.
+* It assumes that the maximum seats a user can request to reserve cannot be greater than the total number of seats in the theater's row. (For this solution, user cannot request more than 20 seats).
