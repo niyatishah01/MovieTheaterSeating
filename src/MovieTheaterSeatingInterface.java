@@ -1,6 +1,8 @@
 
+import java.io.IOException;
+
+
 public interface MovieTheaterSeatingInterface {
-	int countAvailableSeats();
-	String allocateSeats(int numSeats, String name) throws CannotAllocateSeatException;
-	
+	void parseInputFile(String s) throws CannotAllocateSeatException;
+	String createFile() throws IOException;
 }
