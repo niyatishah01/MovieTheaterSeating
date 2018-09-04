@@ -25,7 +25,6 @@ public class Main {
 		sc.close();
 		userInput.close();
 		System.out.println(theaterSeating.createFile());
-
 	}
 
 	/*
