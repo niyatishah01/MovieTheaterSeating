@@ -19,7 +19,6 @@ public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 	private int seatsPerRow = 20;
 	private int noOfRows = 10;
 	private int countAvailableSeats = seatsPerRow * noOfRows;
-	
 
 	public MovieTheaterSeating(ConcurrentHashMap<Character, ArrayList<Integer>> populateTheaterMap) {
 		theaterLayout = populateTheaterMap;
@@ -31,6 +30,9 @@ public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 		return validateRequest(split);
 	}
 
+	/*
+	 * Validate input request for reservation.
+	 */
 	private String validateRequest(String split[]) throws CannotAllocateSeatException {
 		String name = "";
 		int numSeats = 0;
@@ -53,10 +55,14 @@ public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 		return "";
 	}
 
+	/*
+	 * Search for seats, assign the tightest/closest fitting row to the
+	 * corresponding reservation identifier
+	 */
 	private String searchForBestSeats(int numSeats, String name) {
 		String result = "";
 		if (numSeats > countAvailableSeats || numSeats > seatsPerRow) {
-			result=name.concat(" Reservation cannot be made, too many seats requested");
+			result = name.concat(" Reservation cannot be made, too many seats requested");
 			noReservation.add(result);
 			return result;
 		}
@@ -65,7 +71,7 @@ public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 		reservationDetails.put(name, printSeats(availableSeats, numSeats, row));
 		updateSeats(row, numSeats);
 		countAvailableSeats -= numSeats;
-		return new String (name.concat(reservationDetails.get(name).toString()));
+		return new String(name.concat(reservationDetails.get(name).toString()));
 	}
 
 	private void updateSeats(Character row, int numSeats) {
@@ -94,6 +100,9 @@ public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 		return row;
 	}
 
+	/*
+	 * Create the output file
+	 */
 	@Override
 	public String createFile() throws IOException {
 		String content = "";

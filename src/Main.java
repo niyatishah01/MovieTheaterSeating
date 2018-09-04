@@ -5,7 +5,9 @@ import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
-
+	/*
+	 * Assuming a fixed theater layout, having 10 rows and 20 seats per row.
+	 */
 	private static int seatsPerRow = 20;
 	private static int noOfRows = 10;
 
@@ -25,9 +27,10 @@ public class Main {
 		System.out.println(theaterSeating.createFile());
 
 	}
-/*
- *  
- */
+
+	/*
+	 * Generating the Theater Seat Layout
+	 */
 	private static ConcurrentHashMap<Character, ArrayList<Integer>> populateTheaterMap() {
 		ConcurrentHashMap<Character, ArrayList<Integer>> theaterLayout = new ConcurrentHashMap<Character, ArrayList<Integer>>();
 		char temp = 'A';

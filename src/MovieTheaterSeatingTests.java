@@ -1,4 +1,3 @@
-import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import org.junit.Assert;
@@ -11,6 +10,9 @@ public class MovieTheaterSeatingTests {
 	private static int seatsPerRow = 20;
 	private static int noOfRows = 10;
 
+	/*
+	 * Initialize the theater seats layout
+	 */
 	@Before
 	public void setUp() throws Exception {
 		try {
@@ -19,6 +21,9 @@ public class MovieTheaterSeatingTests {
 		}
 	}
 
+	/*
+	 * Test null entry for name/reservation identifier
+	 */
 	@Test
 	public void testParseInputFile1() {
 		try {
@@ -29,6 +34,9 @@ public class MovieTheaterSeatingTests {
 		}
 	}
 
+	/*
+	 * Test requested tickets is greater than 0.
+	 */
 	@Test
 	public void testParseInputFile2() {
 		try {
@@ -39,6 +47,9 @@ public class MovieTheaterSeatingTests {
 		}
 	}
 
+	/*
+	 * Test if the parameters are no greater than or lesser than 2 per row.
+	 */
 	@Test
 	public void testParseInputFile3() {
 		try {
@@ -49,6 +60,9 @@ public class MovieTheaterSeatingTests {
 		}
 	}
 
+	/*
+	 * Test requested tickets is lesser than seats per row and available tickets.
+	 */
 	@Test
 	public void testParseInputFile4() {
 		try {
@@ -59,6 +73,9 @@ public class MovieTheaterSeatingTests {
 		}
 	}
 
+	/*
+	 * Test requested tickets is correctly booked.
+	 */
 	@Test
 	public void testParseInputFile5() {
 		try {
