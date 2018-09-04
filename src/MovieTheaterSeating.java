@@ -12,35 +12,35 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 
-	private  ConcurrentHashMap<Character, ArrayList<Integer>> theaterLayout = new ConcurrentHashMap<Character, ArrayList<Integer>>();
-	private  HashMap<String, Integer> reservationIdentifersList = new HashMap<String, Integer>(); 
-	private  LinkedHashMap<String, ArrayList<String>> reservationDetails= new LinkedHashMap<String, ArrayList<String>>();
-	private  HashSet<String> noReservation= new HashSet<String>();
-	private  int seatsPerRow=20;
-	private  int noOfRows=10;
-	private  int countAvailableSeats=seatsPerRow*noOfRows;
+	private ConcurrentHashMap<Character, ArrayList<Integer>> theaterLayout = new ConcurrentHashMap<Character, ArrayList<Integer>>();
+	private HashMap<String, Integer> reservationIdentifersList = new HashMap<String, Integer>();
+	private LinkedHashMap<String, ArrayList<String>> reservationDetails = new LinkedHashMap<String, ArrayList<String>>();
+	private HashSet<String> noReservation = new HashSet<String>();
+	private int seatsPerRow = 20;
+	private int noOfRows = 10;
+	private int countAvailableSeats = seatsPerRow * noOfRows;
 	
+
 	public MovieTheaterSeating(ConcurrentHashMap<Character, ArrayList<Integer>> populateTheaterMap) {
-		theaterLayout=populateTheaterMap;
+		theaterLayout = populateTheaterMap;
 	}
 
 	@Override
-	public void parseInputFile(String s) throws CannotAllocateSeatException {
-		String split[]=s.split(" ");
-		validateRequest(split);
+	public String parseInputFile(String s) throws CannotAllocateSeatException {
+		String split[] = s.split(" ");
+		return validateRequest(split);
 	}
-	
-	private void validateRequest(String split[]) throws CannotAllocateSeatException {
-		String name="";
-		int numSeats=0;
-		if(split.length==2) {
-			 name=split[0];
-			 numSeats=Integer.parseInt(split[1]);
-			 reservationIdentifersList.put(name,numSeats);
-			 searchForBestSeats(numSeats,name);
+
+	private String validateRequest(String split[]) throws CannotAllocateSeatException {
+		String name = "";
+		int numSeats = 0;
+		if (split.length == 2) {
+			name = split[0];
+			numSeats = Integer.parseInt(split[1]);
+			reservationIdentifersList.put(name, numSeats);
+			return searchForBestSeats(numSeats, name);
 		}
-		if(split.length>2||split.length<2)
-		{
+		if (split.length > 2 || split.length < 2) {
 			throw new CannotAllocateSeatException("Parameters incorrect");
 		}
 		if (numSeats <= 0) {
@@ -50,68 +50,66 @@ public class MovieTheaterSeating implements MovieTheaterSeatingInterface {
 		if (name == null || name.isEmpty()) {
 			throw new CannotAllocateSeatException("Name is empty");
 		}
-				
+		return "";
 	}
-	private void searchForBestSeats(int numSeats,String name){
-		String result="";
-		if (numSeats > countAvailableSeats|| numSeats > seatsPerRow) {
-			result += name + "Reservation cannot be made. %n";
+
+	private String searchForBestSeats(int numSeats, String name) {
+		String result = "";
+		if (numSeats > countAvailableSeats || numSeats > seatsPerRow) {
+			result=name.concat(" Reservation cannot be made, too many seats requested");
 			noReservation.add(result);
-			return;
-		}	
-		    	Character row=closestFit(numSeats);
-		    	ArrayList<Integer> availableSeats=theaterLayout.get(row);
-				reservationDetails.put(name, printSeats(availableSeats, numSeats, row));
-				updateSeats(row,numSeats);
-				countAvailableSeats-=numSeats;
-				return;	
+			return result;
+		}
+		Character row = closestFit(numSeats);
+		ArrayList<Integer> availableSeats = theaterLayout.get(row);
+		reservationDetails.put(name, printSeats(availableSeats, numSeats, row));
+		updateSeats(row, numSeats);
+		countAvailableSeats -= numSeats;
+		return new String (name.concat(reservationDetails.get(name).toString()));
 	}
-	private void updateSeats(Character row, int numSeats){
-		ArrayList<Integer> availableSeats=theaterLayout.get(row);
-			for(int i=0;i<numSeats;i++)
-				availableSeats.remove(0);
+
+	private void updateSeats(Character row, int numSeats) {
+		ArrayList<Integer> availableSeats = theaterLayout.get(row);
+		for (int i = 0; i < numSeats; i++)
+			availableSeats.remove(0);
 	}
-	private ArrayList<String> printSeats(ArrayList<Integer> availableSeats, int numSeats, Character rowId)
-	{
-		ArrayList<String> result= new ArrayList<String>();
-		for(int i=0;i<numSeats;i++)
-		{
-			result.add(Character.toString(rowId)+availableSeats.get(i));
+
+	private ArrayList<String> printSeats(ArrayList<Integer> availableSeats, int numSeats, Character rowId) {
+		ArrayList<String> result = new ArrayList<String>();
+		for (int i = 0; i < numSeats; i++) {
+			result.add(Character.toString(rowId) + availableSeats.get(i));
 		}
 		return result;
 	}
-	private Character closestFit(int numSeats)
-	{
+
+	private Character closestFit(int numSeats) {
 		int minSize = Integer.MAX_VALUE;
-		Character row=Character.MIN_VALUE;
-		for (ConcurrentHashMap.Entry<Character, ArrayList<Integer>> entry : theaterLayout.entrySet())
-		{
-		    if ((entry.getValue().size()-numSeats)<minSize&&(entry.getValue().size()-numSeats)>=0)
-		    {
-		    	minSize = entry.getValue().size()-numSeats;
-		    	row=entry.getKey();
-		    }
+		Character row = Character.MIN_VALUE;
+		for (ConcurrentHashMap.Entry<Character, ArrayList<Integer>> entry : theaterLayout.entrySet()) {
+			if ((entry.getValue().size() - numSeats) < minSize && (entry.getValue().size() - numSeats) >= 0) {
+				minSize = entry.getValue().size() - numSeats;
+				row = entry.getKey();
+			}
 		}
 		return row;
 	}
+
 	@Override
 	public String createFile() throws IOException {
-		String content="";
-		String newContent="";
-		for(Map.Entry<String, ArrayList<String>> entry : reservationDetails.entrySet())
-		{
-			 content+=entry.getKey()+" "+entry.getValue()+System.lineSeparator();
-			 newContent=content.replace("[", "").replace("]","");
+		String content = "";
+		String newContent = "";
+		for (Map.Entry<String, ArrayList<String>> entry : reservationDetails.entrySet()) {
+			content += entry.getKey() + " " + entry.getValue() + System.lineSeparator();
+			newContent = content.replace("[", "").replace("]", "");
 		}
-		String path=createOutputFile("output.txt",newContent);
+		String path = createOutputFile("output.txt", newContent);
 		return path;
 	}
 
-	private String createOutputFile(String fileName, String content) throws IOException 
-	{
-        Files.write(Paths.get(fileName), content.getBytes(), StandardOpenOption.CREATE);
-        File f=new File(fileName);
-        return f.getCanonicalPath();
-    }
+	private String createOutputFile(String fileName, String content) throws IOException {
+		Files.write(Paths.get(fileName), content.getBytes(), StandardOpenOption.CREATE);
+		File f = new File(fileName);
+		return f.getCanonicalPath();
+	}
 
 }
